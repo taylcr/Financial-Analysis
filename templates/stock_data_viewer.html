@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}Stock Data Viewer{% endblock %}
+
+{% block content %}
+    <!-- Stock Data Viewer -->
+    <div class="container">
+        <h1>Stock Data Viewer</h1>
+        <p class="subtitle">Enter a stock ticker symbol to retrieve recent price data.</p>
+        
+        <div class="input-group">
+            <input type="text" id="tickerInput" placeholder="Enter Ticker Symbol (e.g., AAPL)" class="stock-input" autocomplete="off">
+            <button id="submitButton" class="submit-button">Get Stock Data</button>
+        </div>
+        
+        <div class="result-container">
+            <p id="errorMessage" class="error"></p>
+            <div id="stockData" class="stock-data">
+                <canvas id="stockChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chatbot -->
+    <button id="chatButton" class="chat-button">
+        <i data-lucide="message-circle"></i>
+    </button>
+    
+    <div id="chatWidget" class="chat-widget hidden">
+        <div class="chat-header">
+            <span>Stock Assistant</span>
+            <button id="closeChat" class="close-button">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+        <div id="chatMessages" class="chat-messages"></div>
+        <div class="chat-input">
+            <input type="text" id="userInput" placeholder="Ask about stocks...">
+            <button id="sendMessage" class="send-button">
+                <i data-lucide="send"></i>
+            </button>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Data Viewer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <!-- Add Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Add Loading Animation -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Stock Data Viewer</h1>
+        <p class="subtitle">Enter a stock ticker symbol to retrieve recent price data.</p>
+        
+        <div class="input-group">
+            <input type="text" id="tickerInput" placeholder="Enter Ticker Symbol (e.g., AAPL)" class="stock-input">
+            <button id="submitButton" class="submit-button">
+                <span class="button-text">Get Stock Data</span>
+                <span class="loading-spinner hidden">
+                    <i class="fas fa-spinner fa-spin"></i>
+                </span>
+            </button>
+        </div>
+        
+        <div class="result-container">
+            <p id="errorMessage" class="error"></p>
+            <div class="stock-info hidden">
+                <div class="stock-header">
+                    <h2 id="stockSymbol"></h2>
+                    <p id="stockPrice"></p>
+                </div>
+                <div class="price-change">
+                    <span id="priceChange"></span>
+                    <span id="percentageChange"></span>
+                </div>
+            </div>
+            <div id="stockData" class="stock-data">
+                <canvas id="stockChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Improved Chat Widget -->
+    <button id="chatButton" class="chat-button">
+        <i class="fas fa-comments"></i>
+    </button>
+    
+    <div id="chatWidget" class="chat-widget hidden">
+        <div class="chat-header">
+            <span>Stock Assistant</span>
+            <button id="closeChat">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div id="chatMessages" class="chat-messages">
+            <div class="message bot-message">
+                Hello! I'm your stock market assistant. How can I help you today?
+            </div>
+        </div>
+        <div class="chat-input">
+            <input type="text" id="userInput" placeholder="Ask about stocks...">
+            <button id="sendMessage">
+                <i class="fas fa-paper-plane"></i>
+                <span class="loading-spinner hidden">
+                    <i class="fas fa-spinner fa-spin"></i>
+                </span>
+            </button>
+        </div>
+    </div>
+</body>
+</html>
