@@ -1,4 +1,4 @@
 flask
 openai
 
-pip install ta
+pip install pymupdf

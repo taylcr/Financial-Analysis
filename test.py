@@ -1,68 +1,57 @@
-import yfinance as yf
-import matplotlib.pyplot as plt
-import pandas as pd
-from datetime import datetime
-from ta.momentum import RSIIndicator
-from ta.trend import SMAIndicator
+import boto3
+import json
+import base64
+from dotenv import load_dotenv
+import fitz  # PyMuPDF for PDF text extraction
 
-# List of companies (tickers) for comparison
-companies = ['AAPL', 'MSFT', 'GOOG', 'AMZN']
-start_date = '2022-01-01'
-end_date = datetime.today().strftime('%Y-%m-%d')
+load_dotenv()
 
-# Fetch adjusted close data
-data = yf.download(companies, start=start_date, end=end_date)['Adj Close']
+bedrock_runtime = boto3.client('bedrock-runtime', region_name='us-west-2')
 
-# Normalize prices for comparison
-normalized_data = data / data.iloc[0] * 100
 
-# Calculate 20-day Moving Average and RSI for each company
-technical_indicators = {}
-for company in companies:
-    stock_data = data[company].dropna()
-    sma_20 = SMAIndicator(stock_data, window=20).sma_indicator()
-    rsi_14 = RSIIndicator(stock_data, window=14).rsi()
-    technical_indicators[company] = {'SMA_20': sma_20, 'RSI_14': rsi_14}
+prompt = """Analyse le rapport annuel de l'entreprise pour identifier les informations clés sur sa performance financière, ses risques principaux, et ses perspectives de croissance. Concentre-toi sur les sections qui décrivent les indicateurs financiers, les déclarations de la direction, les stratégies futures, et les éléments de risque mentionnés. Fournis un résumé structuré en expliquant :
+- Les performances et résultats financiers récents
+- Les stratégies et initiatives de croissance
+- Les risques principaux identifiés par l'entreprise
+- Toute mention des tendances économiques ou du marché qui peuvent influencer ses opérations.
 
-# Retrieve Fundamental Data (Revenue, Net Income, EPS) using yfinance
-fundamentals = {}
-for company in companies:
-    stock_info = yf.Ticker(company).info
-    fundamentals[company] = {
-        'Revenue': stock_info.get('totalRevenue'),
-        'Net Income': stock_info.get('netIncomeToCommon'),
-        'EPS': stock_info.get('trailingEps')
-    }
+Peux-tu extraire les ratios financiers principaux tels que le ratio de liquidité et le ratio d'endettement? Indique également les initiatives de développement durable mentionnées dans le rapport."""
 
-# Plotting
-fig, axs = plt.subplots(3, 1, figsize=(14, 18), gridspec_kw={'height_ratios': [3, 1, 1]})
 
-# Plot normalized price performance
-for company in companies:
-    axs[0].plot(normalized_data.index, normalized_data[company], label=company)
-axs[0].set_title('Normalized Price Comparison')
-axs[0].set_ylabel('Normalized Price (Starting at 100)')
-axs[0].legend()
+pdf_path = "2023-CN-Rapport-Annuel.pdf"
 
-# Plot 20-day SMA on the price performance chart
-for company in companies:
-    axs[0].plot(technical_indicators[company]['SMA_20'], linestyle='--', label=f'{company} 20-day SMA')
+# Extract text from PDF using PyMuPDF
+pdf_text = ""
+with fitz.open(pdf_path) as pdf_file:
+    for page_num in range(pdf_file.page_count):
+        page = pdf_file[page_num]
+        pdf_text += page.get_text()
 
-# Plot RSI for each company
-for company in companies:
-    axs[1].plot(technical_indicators[company]['RSI_14'], label=f'{company} RSI')
-axs[1].set_title('14-day RSI')
-axs[1].set_ylabel('RSI')
-axs[1].axhline(70, color='red', linestyle='--')  # Overbought level
-axs[1].axhline(30, color='green', linestyle='--')  # Oversold level
-axs[1].legend()
+# Truncate if the text is too long
+max_length = 1000  # Adjust this value based on model limits
+pdf_text = pdf_text[:max_length]
+prompt = f"{pdf_text}. Additionally, {prompt}"
 
-# Display fundamental metrics as a table
-fundamentals_df = pd.DataFrame(fundamentals).T
-axs[2].axis('off')
-table = axs[2].table(cellText=fundamentals_df.values, colLabels=fundamentals_df.columns, rowLabels=fundamentals_df.index, loc='center')
-table.scale(1, 2)  # Adjust table size for readability
-axs[2].set_title('Fundamental Metrics Comparison (Revenue, Net Income, EPS)')
 
-plt.tight_layout()
-plt.show()
+
+kwargs = {
+    "modelId": "anthropic.claude-3-haiku-20240307-v1:0",
+    "contentType": "application/json",
+    "accept": "application/json",
+    "body": json.dumps({
+        "anthropic_version": "bedrock-2023-05-31",
+        "max_tokens": 1000,
+        "messages": [
+            {
+                "role": "user",
+                "content": prompt
+            }
+        ]
+    })
+}
+
+response = bedrock_runtime.invoke_model(**kwargs)
+
+body = json.loads(response['body'].read())
+
+print(body)
