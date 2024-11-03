@@ -12,6 +12,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const sendMessage = document.getElementById('sendMessage');
     const chatMessages = document.getElementById('chatMessages');
 
+    
+
     let currentChart = null;
 
     // Fetch and display stock data
