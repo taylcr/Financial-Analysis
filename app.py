@@ -4,18 +4,12 @@ import yfinance as yf
 import openai
 import os
 from datetime import datetime, timedelta
-from dotenv import load_dotenv
 
 app = Flask(__name__)
 CORS(app)
 
-# Load environment variables from .env file
-load_dotenv()
-
-
 # Set your OpenAI API key
-openai.api_key = os.getenv("OPENAI_API_KEY")
-
+openai.api_key = "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"
 
 @app.route('/')
 def index():
@@ -49,6 +43,33 @@ def get_stock_data():
     
     except Exception as e:
         return jsonify({'error': f'Error fetching stock data: {str(e)}'}), 500
+@app.route('/get_financial_indicators', methods=['POST'])
+def get_financial_indicators():
+    try:
+        data = request.get_json()
+        ticker_symbol = data.get('ticker', '').upper()
+        
+        if not ticker_symbol:
+            return jsonify({'error': 'Please provide a ticker symbol'}), 400
+        
+        # Retrieve financial indicators
+        stock = yf.Ticker(ticker_symbol)
+        info = stock.info
+
+        # Collect the financial indicators
+        response_data = {
+            'revenue': info.get('totalRevenue'),
+            'gross_margin': info.get('grossMargins'),
+            'free_cash_flow': info.get('freeCashflow'),
+            'net_debt': info.get('totalDebt') - info.get('cash') if info.get('totalDebt') and info.get('cash') else None,
+            'ebitda': info.get('ebitda'),
+            'eps': info.get('trailingEps')
+        }
+
+        return jsonify(response_data)
+    
+    except Exception as e:
+        return jsonify({'error': f'Error fetching financial indicators: {str(e)}'}), 500
 
 @app.route('/analyze', methods=['POST'])
 def analyze():
