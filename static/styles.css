@@ -246,6 +246,14 @@ h1 {
     display: inline-block;
     animation: spin 1s linear infinite;
 }
+.financial-indicators {
+    background-color: #f8fafc;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+    line-height: 1.5;
+}
 
 @keyframes spin {
     0% { transform: rotate(0deg); }

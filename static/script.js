@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const submitButton = document.getElementById('submitButton');
     const errorMessage = document.getElementById('errorMessage');
     const stockData = document.getElementById('stockData');
+    const financialIndicatorsContainer = document.getElementById('financialIndicators');
     const chatButton = document.getElementById('chatButton');
     const chatWidget = document.getElementById('chatWidget');
     const closeChat = document.getElementById('closeChat');
@@ -11,9 +12,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const sendMessage = document.getElementById('sendMessage');
     const chatMessages = document.getElementById('chatMessages');
 
+    
+
     let currentChart = null;
 
-    // Stock Data Functionality
+    // Fetch and display stock data
     submitButton.addEventListener('click', async () => {
         const ticker = tickerInput.value.trim().toUpperCase();
         if (!ticker) {
@@ -25,8 +28,10 @@ document.addEventListener('DOMContentLoaded', function() {
         submitButton.disabled = true;
         submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
         errorMessage.textContent = '';
+        financialIndicatorsContainer.innerHTML = '';  // Clear previous indicators
 
         try {
+            // Fetch stock data
             const response = await fetch('/get_stock_data', {
                 method: 'POST',
                 headers: {
@@ -94,8 +99,26 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
 
+            // Fetch financial indicators
+            const indicatorsResponse = await fetch('/get_financial_indicators', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ ticker })
+            });
+
+            const indicatorsData = await indicatorsResponse.json();
+
+            if (indicatorsData.error) {
+                errorMessage.textContent = indicatorsData.error;
+            } else {
+                displayFinancialIndicators(indicatorsData);
+            }
+
         } catch (error) {
-            errorMessage.textContent = 'Error fetching stock data. Please try again.';
+            errorMessage.textContent = 'Error fetching data. Please try again.';
+            console.error('Error:', error);
         } finally {
             // Reset button state
             submitButton.disabled = false;
@@ -103,10 +126,23 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Display financial indicators
+    function displayFinancialIndicators(indicators) {
+        financialIndicatorsContainer.innerHTML = `
+            <p><strong>Chiffre d'affaires (Revenue):</strong> ${indicators.revenue ? `$${indicators.revenue.toLocaleString()}` : 'N/A'}</p>
+            <p><strong>Marge brute (Gross Margin):</strong> ${indicators.gross_margin ? (indicators.gross_margin * 100).toFixed(2) + '%' : 'N/A'}</p>
+            <p><strong>Flux de trésorerie libre (Free Cash Flow):</strong> ${indicators.free_cash_flow ? `$${indicators.free_cash_flow.toLocaleString()}` : 'N/A'}</p>
+            <p><strong>Dette nette (Net Debt):</strong> ${indicators.net_debt ? `$${indicators.net_debt.toLocaleString()}` : 'N/A'}</p>
+            <p><strong>Bénéfice (avant intérêts, impôts, dépréciations et amortissements) (EBITDA):</strong> ${indicators.ebitda ? `$${indicators.ebitda.toLocaleString()}` : 'N/A'}</p>
+            <p><strong>Bénéfice par action (Earnings Per Share - EPS):</strong> ${indicators.eps ? indicators.eps.toFixed(2) : 'N/A'}</p>
+        `;
+    }
+    
+
     // Chat Functionality
     if (chatButton && chatWidget && closeChat) {
         chatButton.addEventListener('click', () => {
-            chatWidget.style.display = 'flex';  // Changed from classList
+            chatWidget.style.display = 'flex';
             chatWidget.style.opacity = '1';
             chatWidget.style.transform = 'translateY(0)';
         });
@@ -140,7 +176,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const data = await response.json();
             
-            // Add bot response
             if (data.error) {
                 addMessage('Sorry, I encountered an error. Please try again.', false);
             } else {
