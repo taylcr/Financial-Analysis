@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 from googlesearch import search
 import os
 import csv
-
+from uploading import upload
 def sanitize_filename(url):
     valid_chars = '-_.() abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
     return ''.join(c if c in valid_chars else '_' for c in url)
@@ -25,8 +25,8 @@ def save_web_content(url):
         print(f"An error occurred: {e}")
         return None
 
-if __name__ == "__main__":
-    query = "Geeksforgeeks"
+def web_scrape(topic):
+    query = topic
     urls = [j for j in search(query)]
 
     # Save URLs and content to a CSV file
@@ -39,5 +39,9 @@ if __name__ == "__main__":
             content = save_web_content(url)  # Retrieve the content
             if content is not None:  # Only save if content retrieval was successful
                 writer.writerow({'url': url, 'content': content})  # Write the URL and content to the CSV
+    upload()
 
-    print("All URLs and content saved to urls_content.csv.")
+
+
+upload()
+print("All URLs and content saved to urls_content.csv and uploaded to aws.")

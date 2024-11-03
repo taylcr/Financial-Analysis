@@ -2,7 +2,7 @@
 import requests
 import csv
 import time
-
+from uploading import upload
 # Variables
 headers = {'User-agent': 'Mozilla/5.0'}
 after = None
@@ -69,4 +69,7 @@ with open('data.csv', 'w', newline='', encoding="utf-8") as file:
 
             time.sleep(4)  # Sleep for 4 seconds to avoid hitting Reddit's rate limit
 
-print("Scraping completed. Data saved to data.csv.")
+
+upload()
+
+print("Scraping completed. Data saved to data.csv and uploaded to aws")
