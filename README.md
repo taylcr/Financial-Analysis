@@ -35,8 +35,8 @@ This project is a web application for financial analysis, offering stock data re
 
 1. **Clone the Repository**:
     ```bash
-    git clone https://github.com/taylcr/Financial-Analysis/FINAL_BRANCH
-    cd financial-analysis-dashboard
+    git clone -b FINAL_BRANCH https://github.com/taylcr/Financial-Analysis.git
+
     ```
 
 2. **Create `requirements.txt`**:
