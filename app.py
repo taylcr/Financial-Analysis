@@ -21,27 +21,50 @@ def get_stock_data():
     try:
         data = request.get_json()
         ticker_symbol = data.get('ticker', '').upper()
+        time_range = data.get('range', '1y')  # Default to 1 year
 
         if not ticker_symbol:
             return jsonify({'error': 'Please provide a ticker symbol'}), 400
+
+        # Convert time range to yfinance period parameter
+        range_mapping = {
+            '5m': '5m',
+            '1d': '1d',
+            '1m': '1mo',
+            '1y': '1y',
+            '5y': '5y',
+            'all': 'max'
+        }
         
+        period = range_mapping.get(time_range, '1y')
+        interval = '5m' if time_range == '5m' else '1d'
+
         # Retrieve stock data
         stock = yf.Ticker(ticker_symbol)
-        stock_info = stock.history(period="1mo")
-        
+        stock_info = stock.history(period=period, interval=interval)
+
         if stock_info.empty:
             return jsonify({'error': 'Invalid ticker symbol or no data found'}), 404
-        
+
+        # For revenue calculation, get quarterly financials
+        financials = stock.quarterly_financials
+        current_revenue = financials.at['Total Revenue', financials.columns[0]] if 'Total Revenue' in financials.index else None
+        previous_revenue = financials.at['Total Revenue', financials.columns[4]] if 'Total Revenue' in financials.index and len(financials.columns) > 4 else None
+
         response_data = {
             'ticker': ticker_symbol,
             'price': stock_info['Close'].tolist(),
-            'dates': stock_info.index.strftime("%Y-%m-%d").tolist()
+            'dates': stock_info.index.strftime("%Y-%m-%d %H:%M:%S").tolist(),
+            'current_revenue': current_revenue,
+            'previous_revenue': previous_revenue
         }
+        
         return jsonify(response_data)
-    
+
     except Exception as e:
         return jsonify({'error': f'Error fetching stock data: {str(e)}'}), 500
-
+    
+    
 @app.route('/get_financial_indicators', methods=['POST'])
 def get_financial_indicators():
     try:
