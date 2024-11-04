@@ -37,6 +37,8 @@ This project is a web application for financial analysis, offering stock data re
     ```bash
     git clone  https://github.com/taylcr/Financial-Analysis.git
 
+    cd Financial-Analysis
+
     ```
 
 2. **Create `requirements.txt`**:
