@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+    <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Financial Analysis Dashboard</title>
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+            <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+        </head>
+<body>
+    <div class="dashboard">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-title">
+                <h1>Financial Analysis</h1>
+                <p>Real-time market insights and analysis</p>
+            </div>
+            <div class="header-controls">
+                <div class="search-container">
+                    <input type="text" placeholder="Search companies..." class="search-input">
+                    <button class="search-btn">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Metrics Grid -->
+        <div class="metrics-grid">
+            <!-- Revenue Metric -->
+            <div class="metric-card fade-in">
+                <div class="metric-header">
+                    <div>
+                        <div class="metric-value">$391.03B</div>
+                        <div class="metric-label">Revenue</div>
+                        <div class="metric-change">
+                            <i class="fas fa-arrow-up"></i> +2.4%
+                        </div>
+                    </div>
+                    <div class="metric-icon" style="background: #ebf5ff;">
+                        <i class="fas fa-chart-line" style="color: #3b82f6;"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Market Sentiment Metric -->
+            <div class="metric-card fade-in" style="animation-delay: 0.1s;">
+                <div class="metric-header">
+                    <div>
+                        <div class="metric-value">78%</div>
+                        <div class="metric-label">Market Sentiment</div>
+                        <div class="metric-change">Strongly Positive</div>
+                    </div>
+                    <div class="metric-icon" style="background: #ecfdf5;">
+                        <i class="fas fa-thumbs-up" style="color: #10b981;"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Market Sentiment Metric -->
+            <div class="metric-card fade-in" style="animation-delay: 0.1s;">
+                <div class="metric-header">
+                    <div>
+                        <div class="metric-value">78%</div>
+                        <div class="metric-label">Market Sentiment</div>
+                        <div class="metric-change">Strongly Positive</div>
+                    </div>
+                    <div class="metric-icon" style="background: #ecfdf5;">
+                        <i class="fas fa-thumbs-up" style="color: #10b981;"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Risk Level Metric -->
+            <div class="metric-card fade-in" style="animation-delay: 0.2s;">
+                <div class="metric-header">
+                    <div>
+                        <div class="metric-value">Moderate</div>
+                        <div class="metric-label">Risk Level</div>
+                        <div class="metric-change">Beta: 1.2</div>
+                    </div>
+                    <div class="metric-icon" style="background: #fffbeb;">
+                        <i class="fas fa-exclamation-triangle" style="color: #f59e0b;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Grid -->
+        <div class="main-grid">
+            <!-- Chart Card -->
+            <div class="chart-card">
+                <h3>Stock Price Movement</h3>
+                <canvas id="stockChart"></canvas>
+            </div>
+
+            <!-- Sentiment Card -->
+            <div class="sentiment-card">
+                <h3>Public Sentiment</h3>
+                <div class="sentiment-bar">
+                    <div class="sentiment-header">
+                        <span>Positive</span>
+                        <span>78%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 78%; background: #10b981;"></div>
+                    </div>
+                </div>
+
+                <div class="sentiment-bar">
+                    <div class="sentiment-header">
+                        <span>Neutral</span>
+                        <span>15%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 15%; background: #6b7280;"></div>
+                    </div>
+                </div>
+
+                <div class="sentiment-bar">
+                    <div class="sentiment-header">
+                        <span>Negative</span>
+                        <span>7%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 7%; background: #ef4444;"></div>
+                    </div>
+                </div>
+
+                <!-- Sentiment Analysis -->
+                <div class="sentiment-analysis">
+                    <div class="analysis-header">
+                        <span>Sentiment Analysis</span>
+                    </div>
+                    <div class="analysis-content">
+                        <textarea readonly class="analysis-text">Based on current market analysis, the company shows strong positive sentiment (78%) driven by robust quarterly earnings, product innovation, and market expansion. Neutral sentiment (15%) reflects some concerns about supply chain challenges, while negative sentiment (7%) primarily stems from broader market uncertainties.</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Market Sentiment Metric -->
+        <div class="metric-card fade-in" style="animation-delay: 0.1s;">
+            <div class="metric-header">
+                <div>
+                    <div class="metric-value">78%</div>
+                    <div class="metric-label">Market Sentiment</div>
+                    <div class="metric-change">Strongly Positive</div>
+                </div>
+                <div class="metric-icon" style="background: #ecfdf5;">
+                    <i class="fas fa-thumbs-up" style="color: #10b981;"></i>
+                </div>
+            </div>
+        </div>
+        <!-- Financial Options -->
+        <div class="financial-options-card">
+            <h3>Financial Report Options</h3>
+            
+            <!-- Upload Section -->
+            <div class="option-section">
+                <div class="option-group">
+                    <button class="option-btn primary" id="uploadBtn">
+                        <i class="fas fa-upload"></i>
+                        Upload Report
+                    </button>
+                    <button class="option-btn secondary" id="analyzeUploadBtn" style="display: none;">
+                        <i class="fas fa-chart-line"></i>
+                        Analyze Report
+                    </button>
+                </div>
+            </div>
+        
+            <div class="section-divider">
+                <span>or</span>
+            </div>
+            
+            <!-- Retrieve Section -->
+            <div class="option-section">
+                <div class="option-group">
+                    <select class="year-select">
+                        <option value="">Select Year</option>
+                        <option value="2024">2024</option>
+                        <option value="2023">2023</option>
+                        <option value="2022">2022</option>
+                        <option value="2021">2021</option>
+                    </select>
+        
+                    <select class="doc-select">
+                        <option value="">Select Document</option>
+                        <option value="10-K">10-K (Annual Report)</option>
+                        <option value="10-Q">10-Q (Quarterly Report)</option>
+                    </select>
+        
+                    <button class="option-btn secondary" id="retrieveBtn">
+                        <i class="fas fa-download"></i>
+                        Retrieve Current Report
+                    </button>
+        
+                    <button class="option-btn success" id="downloadBtn" style="display: none;">
+                        <i class="fas fa-file-download"></i>
+                        Download Report
+                    </button>
+        
+                    <button class="option-btn primary" id="analyzeRetrieveBtn" style="display: none;">
+                        <i class="fas fa-chart-line"></i>
+                        Analyze Report
+                    </button>
+                </div>
+            </div>
+            
+        </div>
+
+        
+
+        <!-- Analysis Results -->
+        <div class="sentiment-analysis-down">
+            <div class="analysis-header">
+                <span>Financial Report Analysis</span>
+            </div>
+            <div class="analysis-content">
+                <textarea readonly class="analysis-text-down" id="reportAnalysis">Upload or retrieve a financial report to see the analysis here.</textarea>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Button -->
+    <button class="chat-button pulse">
+        <i class="fas fa-comments"></i>
+    </button>
+
+    <!-- Chat Widget -->
+    <div class="chat-widget-container" id="chatWidget">
+        <div class="chat-widget-header">
+            <div class="status">
+                <span class="status-dot"></span>
+                AI Financial Advisor
+            </div>
+            <button class="close-chat" id="closeChat">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="chat-messages" id="chatMessages">
+            <div class="chat-message bot">
+                Hello! I'm your AI financial advisor. How can I help you analyze your financial data today?
+            </div>
+        </div>
+        
+        <div class="chat-input-container">
+            <input type="text" 
+                   class="chat-input" 
+                   id="chatInput" 
+                   placeholder="Ask about financial analysis...">
+            <button class="send-message" id="sendMessage">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
